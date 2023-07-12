@@ -18,6 +18,7 @@ On the other hand, we evaluated the environmental and bacteriological risk asses
 
 
 Our highlights were:
+
 * High organic contamination was observed throughout the study period.
 * Organic contamination indicators showed a contamination factor (CF) from moderate to high.
 * Pollution load was high and water quality was poor during the majority of the study period.
@@ -25,11 +26,13 @@ Our highlights were:
 
 
 Author contributions
+
 MCCM participated in the data collection, sample analysis, monitoring design, funding acquisition, project administration; data analysis and model designs, original draft, writing, review, and editing.
 DG participated in the data collection, sample analysis, data curation, data analysis and visualization, original draft, writing, review, and editing.
 
 
 Funding
+
 This study was funded by the Universidad Autónoma de Entre Ríos through the projects PIDIN-UADER “Diagnóstico ambiental y propuesta de gestión para la Laguna del Parque Unzué (Gualeguaychú, Entre Ríos)” (Res. C.S. 404/15), and PIDIN-UADER   "Contribución al conocimiento de la ecología de dos lagunas urbanas pampeanas: laguna del Parque Unzué (Gualeguaychú, Entre Ríos) y laguna Los Patos (Ensenada, Buenos Aires)" (Res. 199/18).
 
 Acknowledgments
