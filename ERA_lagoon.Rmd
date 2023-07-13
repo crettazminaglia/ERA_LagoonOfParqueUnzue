@@ -1,0 +1,273 @@
+---
+title: "Bacteriological and eutrophication risk assessment of an Argentinian temperate shallow urban lagoon"
+output: html_document
+date: '2023-07-13'
+authors: Crettaz Minaglia, M.C. & Gianello, D.
+funding: UADER, Argentina
+---
+## Importing the packages to use
+```
+library(FactoMineR)#For ACP
+library(missMDA) #For imputation matrix
+library(readxl) #For data loading
+library(factoextra)
+library(corrplot)
+library(plot3D)
+library(ggplot2)
+library(tidyverse)
+library(pwr)
+library(ggpubr)
+library(rstatix)
+library(Hmisc)
+```
+## Bacteriological parameters measured in the lagoon of Parque Unzué during 2015-2019. A) Total mesophilic aerobic bacteria (TMAB) in colony forming units (CFU.100 mL-1) vs year; B) Total mesophilic aerobic bacteria (TMAB) in colony forming units (CFU.100 mL-1) vs seasons; C) Total coliforms (TC) in most probable number (MPN.100 mL-1) vs year; and D) Total coliforms (TC) in most probable number (MPN.100 mL-1) vs seasons. Asterisks are significant differences (α < 0.05).
+
+´´´
+my_comparisons1 <- list( c("2015","2016"),c("2015","2017"),c("2015","2018"),c("2015","2019"),c("2016","2017"),c("2016","2018"),c("2016","2019"),c("2017","2018"),c("2017","2019"),c("2018","2019"))                        
+my_comparisons2 <- list( c("Autumn","Winter"),c("Autumn","Spring"),c("Autumn","Summer"),c("Winter", "Spring"),c("Winter","Summer"),c("Spring","Summer"))                        
+
+#Comparison between samplings points, years and seasons
+
+fig1<-ggboxplot(FQ, x = "Year", y = "TMA",ggtheme = theme_bw(base_size = 10),
+                color = "Year", palette = "jco", add = "jitter")+ 
+  stat_compare_means(comparisons = my_comparisons1,method = "wilcox.test",hide.ns=FALSE,label="p.signif")+ # Add pairwise comparisons p-value
+  stat_compare_means(label.y =30) + theme(axis.title.x=element_blank())
+
+fig1
+
+f1<-ggboxplot(FQ, x = "Year", y = "TMA",ggtheme = theme_classic(),color = "Year", palette = "jco", add = "jitter")+
+  labs(y = "TMAB (CFU.100mL-1)") +theme(axis.title.x=element_blank())+
+  stat_compare_means(comparisons = my_comparisons1,method = "wilcox.test",hide.ns=FALSE,
+                     label="p.signif", tip.length = 0.01, bracket.size = 0.1,size=2, step.increase=0.1) + 
+  theme(axis.text.y  = element_text(hjust = 1, size=10,color="black"))+
+  theme(axis.text.x = element_blank())+
+  theme(legend.position = "none")+ theme(axis.ticks.x=element_blank())
+f1
+ggsave(filename = "TMAB (UFC.100mL-1)_año.png", plot =f1, width = 10, height = 10, dpi = 300, units = "cm")
+
+f2<-ggboxplot(FQ, x = "Year", y = "TC",ggtheme = theme_classic(),color = "Year", palette = "jco", add = "jitter")+
+  labs(y = "TC (MPN.100mL-1)") +theme(axis.title.x=element_blank())+
+  stat_compare_means(comparisons = my_comparisons1,method = "wilcox.test",hide.ns=FALSE,label="p.signif", tip.length = 0.01, bracket.size = 0.1,size=2, step.increase=0.2) + 
+  theme(axis.text.y  = element_text(hjust = 1, size=10,color="black"))+ 
+  theme(axis.text.x  = element_text(hjust = 1, size=10,color="black"))+
+  theme(legend.position = "none")
+f2
+ggsave(filename = "TC (MPN.100mL-1)año.png", plot =f2, width = 10, height = 10, dpi = 300, units = "cm")
+
+p1<-ggpubr::ggarrange(f1,f2, labels = c("A)", "B)"),ncol = 1, nrow=2)
+p1
+ggsave(filename = "micro(año).png", plot =p1, width = 12, height = 20, dpi = 200, units = "cm")
+
+f3<-ggboxplot(FQ, x = "Station", y = "TMA",ggtheme = theme_classic(),color = "Station", palette = "jco", add = "jitter")+
+  labs(y = "TMAB (CFU.100mL-1)") +theme(axis.title.x=element_blank())+
+  stat_compare_means(comparisons = my_comparisons2,method = "wilcox.test",hide.ns=FALSE,label="p.signif", tip.length = 0.01, bracket.size = 0.1,size=2, step.increase=0.1) + 
+  theme(axis.text.y  = element_text(hjust = 1, size=10,color="black"))+
+  theme(axis.text.x = element_blank())+
+  theme(legend.position = "none")+ theme(axis.ticks.x=element_blank())
+f3
+ggsave(filename = "TMAB (UFC.100mL-1)_estacion.png", plot =f1, width = 10, height = 10, dpi = 300, units = "cm")
+
+f4<-ggboxplot(FQ, x = "Station", y = "TC",ggtheme = theme_classic(),color = "Station", palette = "jco", add = "jitter")+
+  labs(y = "TC (MPN.100mL-1)") +theme(axis.title.x=element_blank())+
+  stat_compare_means(comparisons = my_comparisons2,method = "wilcox.test",hide.ns=FALSE,label="p.signif", tip.length = 0.01, bracket.size = 0.1,size=2, step.increase=0.2) + 
+  theme(axis.text.y  = element_text(hjust = 1, size=10,color="black"))+ 
+  theme(axis.text.x  = element_text(hjust = 1, size=10,color="black"))+
+  theme(legend.position = "none")
+f4
+ggsave(filename = "TC (MPN.100mL-1)estacion.png", plot =f2, width = 10, height = 10, dpi = 300, units = "cm")
+
+p2<-ggpubr::ggarrange(f3,f4, labels = c("A)", "B)"),ncol = 1, nrow=2)
+p2
+ggsave(filename = "micro(promedio-estacion).png", plot =p1, width = 12, height = 20, dpi = 200, units = "cm")
+
+´´´
+## Principal component analysis (PCA) 3D plotting using physicochemical parameters measured in the lagoon of Parque Unzué during 2015-2019: air temperature (AT), water temperature (WT), pH, electric conductivity (EC), dissolved oxygen (DO),  depth, water transparency (WTr), soluble reactive phosphorus (SRP), chemical oxygen demand (COD), rain, and hydrometric level (HL).  Seasons and years are supplementary variables.
+
+´´´
+FQ <-read.table("G:/My Drive/Papers IBGA/Papers/ERA_Laguna/FQ.csv",   header = TRUE, sep=",",   encoding = "Unicode")
+summary(FQ)
+
+#ACP with imputation matrix
+FQcuanti <- FQ[,4:15] #select only cuantitative column of the table
+FQcuanti <- as.data.frame(FQcuanti) #convert to data.frame
+print(FQcuanti) #see 
+
+DSP<-FQ[,2:3]
+matrizimputacion<- estim_ncpPCA(FQcuanti, ncp.min=0, ncp.max = 5, method.cv = "Kfold") #create null data
+print(matrizimputacion) #see
+
+imputePCAlaguna <-imputePCA(FQcuanti, ncp = 2) #create imputation matrix
+
+pcalagunacomp<-imputePCAlaguna$completeObs #asigno a un data frame los datos generados en la matriz de imputación
+pcalagunacomp<-as.data.frame(pcalagunacomp)
+
+#PCA usando la combinación de data.frame y como variables cualitativas suplementarias la fecha y punto de muestreo
+PCAlaguna <- PCA(datospca,quali.sup=13:14,grap=TRUE) 
+
+# Contributions of variables to PC1
+c1<-fviz_contrib(PCAlaguna, choice = "var", axes = 1, top = 10, ylim=c(0,25))+
+  theme(axis.text.x = element_text(angle=45,size=18)) +  
+  theme(axis.text.y = element_text(size=18))+
+  theme(axis.title.y = element_text(size=18))+ 
+  labs(title='Contribution of variables to Dim-1', size=20)
+  
+# Contributions of variables to PC2
+c2<-fviz_contrib(PCAlaguna, choice = "var", axes = 2, top = 10, ylim=c(0,25))+
+  theme(axis.text.x = element_text(angle=45,size=18)) +  
+  theme(axis.text.y = element_text(size=18))+
+  theme(axis.title.y = element_text(size=18))+ 
+  labs(title='Contribution of variables to Dim-2', size=20)
+# Contributions of variables to PC3
+c3<-fviz_contrib(PCAlaguna, choice = "var", axes = 3, top = 10, ylim=c(0,25))+
+  theme(axis.text.x = element_text(angle=45,size=18)) +  
+  theme(axis.text.y = element_text(size=18))+
+  theme(axis.title.y = element_text(size=18))+ 
+  labs(title='Contribution of variables to Dim-3', size=20)
+
+contr<-ggpubr::ggarrange(c1,c2,c3, labels = c("A)", "B)","C)"),ncol = 3, nrow=1)
+contr
+ggsave(filename = "contrib_var.png", plot =contr, width = 30, height = 12, dpi = 200, units = "cm")
+
+###PLOT 3D -dimensiones 1,2 y 3 del pca-
+
+scores <- PCAlaguna$ind$coord[, 1:3]
+scores[1:10, ]
+
+
+loadings<-round(PCAlaguna$var$coord,3)
+loadings<-loadings[,1:3]
+
+x <- scores[, 1]
+y <- scores[, 2]
+z <- scores[, 3]
+
+
+PCAlaguna$quali.sup
+
+loadingsa<-round(PCAlaguna$quali.sup$coord,3)
+loadings1<-loadingsa[1:5,1:3]
+loadings2<-loadingsa[6:9,1:3]
+
+xa<-PCAlaguna$quali.sup$coord[1:5,1]
+yb<-PCAlaguna$quali.sup$coord[1:5,2]
+zc<-PCAlaguna$quali.sup$coord[1:5,3]
+
+
+xd<-PCAlaguna$quali.sup$coord[6:9,1]
+ye<-PCAlaguna$quali.sup$coord[6:9,2]
+zf<-PCAlaguna$quali.sup$coord[6:9,3]
+
+p1<-points3D(x , y, z,pch = 16, cex = 1.8, alpha = 0.2, bty = "u",
+             colkey = FALSE, theta = -40,phi = 60, col =  "orange",
+             xlab = "PC 1 (26.2%)", ylab = "PC 2 (15.7%)", zlab = "PC 3 (15.3%)", ticktype = "detailed")
+
+
+
+p1<-p1+ text3D(x = 4*loadings[, 1] + 0.4, y = 4*loadings[, 2] + 0.4,
+               z = 4*loadings[, 3] + 0.4, labels = rownames(loadings),
+               col = "black", cex = 1.5, font=1, add = T)
+
+
+
+p1<-p1+ arrows3D(x0 = rep(0, nrow(loadings)), y0 = rep(0, nrow(loadings)), z0 =
+                   rep(0, nrow(loadings)), x1 = 4*loadings[, 1],
+                 y1 = 4*loadings[,2], z1 = 4*loadings[, 3],
+                 col = "springgreen4",cex= 7,lty=1,lwd = 0.15, length=0.20, add = TRUE)
+
+points3D(xa, yb, zc,pch = 16, cex = 1.2, col = "darkblue" , add=T)
+points3D(xd, ye, zf,pch = 16, cex = 1.2, col = "darkred" , add=T)
+text3D(xa, yb, zc, labels=(rownames(loadings1)), cex=1.2,col="darkblue",font=1, add=TRUE) 
+text3D(xd, ye, zf, labels=(rownames(loadings2)), cex=1.5,col="darkred",font=1, add=TRUE) 
+
+´´´
+## Correlations between physicochemical and bacteriological parameters measured in the lagoon of the Parque Unzué during 2015-2019. Full circles are statistically significant correlations (p < 0.05), and the scale shows the correlation values from red (-1.0) to blue (1.0). TMAB: total mesophilic aerobic bacteria, SRP: soluble reactive phosphorus, AT: atmospheric temperature, WT: water temperature, EC: electric conductivity, TC: total coliforms, COD: chemical oxygen demand, Rain: one-week cumulative rain, Chl-a: Chlorophyll-a, pH: hydrogen potential, DO: dissolved oxygen, HL: hydrometric level, Deep: depth of the water column, and WTr: water transparency of Secchi disk.
+
+´´´
+cor<-FQ[,4:17]
+
+rescor<-rcorr(as.matrix(cor)) #le digo que me haga la matriz de correlación que se llame res"
+
+corrplot(rescor$r,order="hclust",p.mat=rescor$P,sig.level=0.05,insig="blank")
+
+correlacion <-round(cor(dataset_co, use = "complete.obs"), 2) 
+col <- colorRampPalette(c("darkorange", "white", "steelblue"))(20) 
+corrplot(rescor$r, method="circle", type= "upper", number.cex = 0.40, 
+        order = "hclust", tl.col = "black", col = col, 
+         sig.level = 0.05, insig = "blank",
+        diag=F) 
+
+´´´
+## Values of Concentration Factor (CF) for each measured parameter. On the left axis, CFs values of WT: water temperature, pH: hydrogen potential, EC: electric conductivity, DO: dissolved oxygen, and WTr: water transparency of Secchi disk; and on the right axis, CFs values of SRP: soluble reactive phosphorus, Chl-a: Chlorophyll-a, COD: chemical oxygen demand, and TC: total coliforms can be observed.
+
+´´´
+CF1 <-read.table("G:/My Drive/Papers IBGA/Papers/ERA_Laguna/boxplot_cf1.csv",   header = TRUE, sep=",", encoding = "Unicode")
+CF1
+CF1$Variable<- factor(CF1$Variable, levels = c("WT","pH","EC","DO","WTr"))
+
+CF2 <-read.table("C:/Users/diame/Documents/IBGA/Papers/ERA_Laguna/boxplot_cf2.csv",   header = TRUE, sep=",", 
+                 encoding = "Unicode")
+CF2
+CF2$Variable<- factor(CF1$Variable, levels = c("SRP","Chl_a","COD","TC"))
+
+cf_1<-ggboxplot(CF1, x = "Variable", y = "CF",ggtheme = theme_classic(),color = "Variable", add = "jitter")+
+  scale_fill_manual(values=alpha(c("#0073C2FF","#EFC000FF", "#868686FF", "#CD534CDD","#7AA6DcFF"),.7))+ 
+  scale_color_manual(values=c("#0073C2FF","#EFC000FF", "#868686FF", "#CD534CDD","#7AA6DcFF")) +
+  labs(y = "CF") +theme(axis.title.x=element_blank())+
+  theme(axis.text.y  = element_text(hjust = 1, size=10,color="black"))+
+  theme(legend.position = "none")
+
+cf_2<-ggboxplot(CF2, x = "Variable", y = "CF",ggtheme = theme_classic(),color = "Variable", add = "jitter")+
+  scale_fill_manual(values=alpha(c("#003C67FF","#8F7700FF", "#4A6990FF", "#A73030FF"),.7))+ 
+  scale_color_manual(values=c("#003C67FF","#8F7700FF", "#4A6990FF", "#A73030FF")) +
+  labs(y = "CF") +theme(axis.title.x=element_blank())+
+  theme(axis.text.y  = element_text(hjust = 1, size=10,color="black"))+
+  theme(legend.position = "none")
+
+boxplot_CF<-ggpubr::ggarrange(cf_1,cf_2,ncol = 2, nrow=1)
+ggsave(filename = "boxplot_CF.png", plot =boxplot_CF, width = 22, height = 12, dpi = 200, units = "cm")
+
+´´´
+
+#Ploting Polution load index (PLI)
+´´´
+PLI <-read.table("G:/My Drive/Papers IBGA/Papers/ERA_Laguna/boxplot_pli.csv",   header = TRUE, sep=",", 
+                encoding = "Unicode")
+PLI
+
+x<-PLI$PLI
+
+p1<-ggplot(PLI, aes(x = "",y=PLI)) + 
+  geom_boxplot(outlier.colour = "black",outlier.alpha = 0.8,color= "black") +
+  geom_jitter(aes(color = factor(Year)), alpha=0.5,size=4) +
+  coord_flip() +  
+  theme_classic()+
+  stat_boxplot(geom = "errorbar", # Bigotes
+               width = 0.2,color="black")+
+  theme(axis.text.y = element_blank()) +
+  theme(axis.title.y=element_blank())+
+  theme(axis.ticks.y=element_blank())+
+  labs(y ="Pollution Load Index (PLI)", x="Study Period")
+
+p1 
+ggsave(filename = "boxplot_PLI1.png", plot =p1, width = 15, height = 8, dpi = 200, units = "cm")
+
+´´´
+# Ploting Water Quality Index (WQI)
+
+´´´
+WQI <-read.table("C:/Users/diame/Documents/IBGA/Papers/ERA_Laguna/wqi.csv",   header = TRUE, sep=",", 
+                encoding = "Unicode")
+
+WQI$Date<-as.Date(WQI$Date, format="%d/%m/%Y")
+
+WQI[ ,1]=as.Date(WQI$Date, format="%Y/%m/%d")
+WQI
+
+plot_WQI<-ggplot(data=WQI, aes(x= Date, y= Overall.WQI)) + geom_point()+ geom_line()  
+plot_WQI<-plot_WQI + theme_classic()+scale_y_continuous(limit = c(0,200))+
+  theme(axis.title.x=element_blank())
+plot_WQI<-plot_WQI + geom_hline(yintercept=(c(50,100,200)), linetype = 2,alpha = 0.8)
+plot_WQI
+ggsave(filename = "WQI.png", plot =plot_WQI, width = 15, height = 8, dpi = 200, units = "cm")
+
+´´´
