@@ -1,7 +1,7 @@
 # ERA_LagoonOfParqueUnzue
 This a repo which contains the supplementary information about the manuscript called ¨Bacteriological and eutrophication risk assessment of an Argentinian temperate shallow urban lagoon¨ being the authors Melina Celeste Crettaz Minaglia & Diamela Gianello (see below ¨Author contributions¨).
 
-Status: manuscript under review
+Status at July 2023: accepted by Environmental Science and Pollution Research Journal.
 
 * The main objective of this work was to study the water quality and to assess the bacteriological and eutrophication risks during 2015-2019 in the temperate shallow urban lagoon of the Parque Unzué (Gualeguaychú, Argentina) through physicochemical and bacteriological parameters and to predict these risks under climate change scenarios through temperature and rain indicators. 
 
